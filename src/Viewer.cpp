@@ -109,7 +109,7 @@ namespace myslam{
                 cv::circle(img_out, feat->mKeyPoint.pt, 2, cv::Scalar(0,255,0), 2);
         }
         std::string id = IntToString(Frame->mFrameId);
-        putText(img_out, id, cv::Point(0, 50), cv::FONT_HERSHEY_COMPLEX, 1, cv::Scalar(0, 0, 0), 2, 8, 0);
+        putText(img_out, id, cv::Point(0, 50), cv::FONT_HERSHEY_COMPLEX, 1, cv::Scalar(0, 255, 0), 2, 8, 0);
         return img_out;
     }
 

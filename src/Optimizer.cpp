@@ -106,7 +106,6 @@ namespace myslam{
             vertex_pose->setEstimate(kf->GetPose());
             if(KFs.size()>1 && kf->mKeyFrameId == 0){
                 vertex_pose->setFixed(true);
-                assert(kf->GetPose().log().norm()!=0);
             }    
             optimizer.addVertex(vertex_pose);
             maxKFid = std::max(kf->mKeyFrameId, maxKFid);
@@ -120,17 +119,23 @@ namespace myslam{
         for(auto &MapPoint : MPs){
             auto mp_id = MapPoint.first;
             auto mp = MapPoint.second;
-            if(mp==nullptr || mp->mbIsOutlier)
-                continue;
-            if(Vertex_Mps.find(mp->mid) == Vertex_Mps.end()){
-                auto vertex_XYZ = new VertexXYZ();
-                vertex_XYZ->setId(static_cast<int>(maxKFid +1 + mp->mid));
-                //LOG(INFO) << "\nmp_pose: \n" << mp->GetPose().matrix();
-                vertex_XYZ->setEstimate(mp->GetPose());
-                vertex_XYZ->setMarginalized(true);
-                optimizer.addVertex(vertex_XYZ);
-                Vertex_Mps.insert(std::make_pair(mp->mid, vertex_XYZ));
+            assert(mp!=nullptr);
+            // if(mp->mbIsOutlier)
+            //     continue;
+            assert(!mp->mbIsOutlier);
+            auto vertex_XYZ = new VertexXYZ();
+            vertex_XYZ->setId(static_cast<int>(maxKFid +1 + mp->mid));
+            //LOG(INFO) << "\nmp_pose: \n" << mp->GetPose().matrix();
+            vertex_XYZ->setEstimate(mp->GetPose());
+            vertex_XYZ->setMarginalized(true);
+            optimizer.addVertex(vertex_XYZ);
+            Vertex_Mps.insert(std::make_pair(mp->mid, vertex_XYZ));
+
+            // 第一次观测到该点的关键帧不在滑动窗口的话，将该点固定，不优化
+            if(KFs.find(mp->GetObservation().begin()->first)==KFs.end()){
+                vertex_XYZ->setFixed(true);
             }
+
             auto observations = mp->GetActivateObservation();
             for(auto &obs : observations){
                 auto kfId = obs.first;
@@ -187,8 +192,8 @@ namespace myslam{
             }
         }
                 
-        LOG(INFO) << "OUTLIERS nums is:  " << cntOutlier;
-        LOG(INFO) << "INLIERS nums is:  " << cntInlier;
+        // LOG(INFO) << "OUTLIERS nums is:  " << cntOutlier;
+        // LOG(INFO) << "INLIERS nums is:  " << cntInlier;
         // 处理外点
         // 遍历当前边和特征点
         for(auto &fe : FeatsAndEdges){
@@ -196,8 +201,6 @@ namespace myslam{
             auto feat = fe.first;
             auto mp = feat->mpMapPoint.lock();
             if(feat->IsOutLier){
-                // 取消Feature对该点的观测
-                //mp->RemoveActiveObservation(feat);
                 mp->RemoveActiveObservation(feat);
                 mp->RemoveObservation(feat);
                 if(mp->GetActivateObsCnt()==0){

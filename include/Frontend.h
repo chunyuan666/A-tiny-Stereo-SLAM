@@ -33,10 +33,12 @@ public:
    /**
     * @brief 设置跟踪参数状态
    */
-    void SetTrackingPara(const int &initGood, const int &trackingGood, const int &trackingBad){
+    void SetTrackingPara(const int &initGood, const int &trackingGood, const int &trackingBad,
+                        const float &thDepth){
         mnFeaturesTrackingGood = trackingGood;
         mnFeaturesTrackingBad=trackingBad;
         mnFeaturesInitGood=initGood;
+        ThDepth = thDepth;
     }
 
   
@@ -187,6 +189,7 @@ public:
     bool IsInsernewkf = false;
 
     std::list<SE3> mRelativeToRefPose;
+    std::list<KeyFrame::Ptr> mlReferKFs;
 
     enum TrackingStatus{INIT, OK, LOST};
     
@@ -197,6 +200,8 @@ private:
     int mnFeaturesTrackingGood;
     int mnFeaturesTrackingBad;
     int mnFeaturesInitGood;
+
+    float ThDepth;
 
     SE3 mVelocity = SE3_Identity; 
 

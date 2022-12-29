@@ -96,6 +96,7 @@ namespace myslam{
         int cnt_landmark_removed = 0;
         std::unique_lock<std::mutex> lock(mMutexData);
         for(auto iter = mmActivateMapPoints.begin(); iter!=mmActivateMapPoints.end();){
+            assert(iter->second->GetActivateObsCnt() >= 0);
             if(iter->second->GetActivateObsCnt() == 0){
                 mmActivateMapPoints.erase(iter++);
                 cnt_landmark_removed++;
@@ -103,8 +104,8 @@ namespace myslam{
                 iter++;
             }
         }
-        LOG(INFO) << "Removed " << cnt_landmark_removed << " active landmarks  "
-                  << "remaining  " << mmActivateMapPoints.size();
+        // LOG(INFO) << "Removed " << cnt_landmark_removed << " active landmarks  "
+        //           << "remaining  " << mmActivateMapPoints.size();
     }
 
     void Map::RemoveOutlierMapPoints() {
@@ -127,7 +128,8 @@ namespace myslam{
                 iter++;
             }
         }
-        LOG(INFO) << "一共移除 " << cnt << "个外点";
+        if(cnt>0)
+            LOG(INFO) << "Remove " << cnt << " OutLiners";
     }
 
     void Map::RemoveMapPoints(const MapPoints::Ptr &MapPoint){

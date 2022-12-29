@@ -71,6 +71,8 @@ public:
 
     void SetViewerPara();
 
+    void SaveTrajectory();
+
     /**
      * @brief 析构函数
      * @details 将读取配置文件析构

@@ -37,7 +37,7 @@ int main(int argc, char **argv){
    LOG(INFO) << "nImages: " << nImages << endl;
 
    for(int ni = 0; ni < nImages; ni++){
-       if(ni < 2600) continue;
+    //    if(ni < 2600) continue;
        cv::Mat ImgLeft = cv::imread(vstrImageLeft[ni], cv::IMREAD_GRAYSCALE);
        cv::Mat ImgRight = cv::imread(vstrImageRight[ni], cv::IMREAD_GRAYSCALE);
        double TimeStamp = vTimestamps[ni];
@@ -62,9 +62,14 @@ int main(int argc, char **argv){
             break; 
    }
 
+    slam->SaveTrajectory();
+    LOG(INFO) << "Trajectory has been Save: ./trajectory.txt";
+
     slam->Stop();
     
     std::cout << "System stop." << std::endl;
+
+    
 
     return 0;
 

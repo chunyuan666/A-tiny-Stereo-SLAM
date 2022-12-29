@@ -28,10 +28,12 @@ System::System(const std::string config_file){
     mFrontend->SetCamera(mCameraLeft, mCameraRight);
 
     int TrackingGood, TrackingBad, InitGood;
+    float thDepth;
     fs_read["numFeatures.initGood"] >> InitGood;
     fs_read["numFeatures.trackingBad"] >> TrackingBad;
     fs_read["numFeatures.trackingGood"] >> TrackingGood;
-    mFrontend->SetTrackingPara(InitGood, TrackingGood, TrackingBad);
+    fs_read["ThDepth"] >> thDepth;
+    mFrontend->SetTrackingPara(InitGood, TrackingGood, TrackingBad, thDepth);
 
     mMap = std::make_shared<Map>();
     int num_activateMap;
@@ -170,6 +172,29 @@ void System::LoadImages(const string &strPathToSequence, vector<string> &vstrIma
         vstrImageRight[i] = strPrefixRight + ss.str() + ".png";
     }
 }
+
+    void System::SaveTrajectory(){
+        std::string filePath = "trajectory.txt";
+        std::ofstream outfile;
+        outfile.open(filePath, std::ios_base::out|std::ios_base::trunc);
+        outfile << std::fixed;
+        auto KFs = mMap->GetAllKeyFrames();
+        SE3 Two = KFs.begin()->second->GetPose().inverse();
+        auto Riter = mFrontend->mlReferKFs.begin();
+        for(auto iter = mFrontend->mRelativeToRefPose.begin(); 
+                 iter!=mFrontend->mRelativeToRefPose.end(); iter++, Riter++){
+            auto Refkf = *Riter;
+            SE3 Trw = Refkf->GetPose() * Two;
+            SE3 Tcw = (*iter) * Trw;
+            SE3 Twc = Tcw.inverse();
+            Vec3d twc = Twc.translation();
+            Mat33d Rwc = Twc.rotationMatrix();
+            outfile << setprecision(9) << Rwc(0,0) << " " << Rwc(0,1)  << " " << Rwc(0,2) << " "  << twc(0) << " " <<
+            Rwc(1,0) << " " << Rwc(1,1)  << " " << Rwc(1,2) << " "  << twc(1) << " " <<
+            Rwc(2,0) << " " << Rwc(2,1)  << " " << Rwc(2,2) << " "  << twc(2) << endl;
+        }
+        outfile.close();
+    }
 
     System::~System(){
         fs_read.release();

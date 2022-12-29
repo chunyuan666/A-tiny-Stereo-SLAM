@@ -370,7 +370,7 @@ namespace myslam {
                         continue;
                     auto mapPoint = fea->mpMapPoint.lock();
                     if(mapPoint){
-                        mapPoint->mbIsOutlier = true; 
+                        // mapPoint->mbIsOutlier = true; 
                         fea->mpMapPoint.reset();
                     }
                     fea->IsOutLier = false;
@@ -393,6 +393,7 @@ namespace myslam {
         mCurrentFrame->mReferenceKF = mReferenceKF;
         SE3 Tcr = mCurrentFrame->GetPose()*mCurrentFrame->mReferenceKF->GetPose().inverse();
         mRelativeToRefPose.push_back(Tcr);
+        mlReferKFs.push_back(mReferenceKF);
         mLastFrame = mCurrentFrame;
         if(mViewer)   
             mViewer->AddCurrentFrame(mCurrentFrame);
@@ -448,6 +449,7 @@ namespace myslam {
         const float maxD = f;
         unsigned long nGoodPoints = 0;
         int nBadPoints = 0;
+        const float thDepth = b * ThDepth;
         for(unsigned long i = 0; i < mCurrentFrame->mvpFeatureLeft.size(); i++){
             // if(!mCurrentFrame->mvpFeatureRight[i])
             //     continue;
@@ -479,7 +481,7 @@ namespace myslam {
             if(disparity >= minD && disparity < maxD){
                 depth = b * f / disparity;
             }
-            if(depth <=0){
+            if(depth <=0 || depth > thDepth){
                 nBadPoints++;
                 continue;
             }

@@ -26,7 +26,7 @@ make
 ```
 evo_traj kitti trajectory.txt KITTI_00_ORB.txt --ref=KITTI_00_gt.txt -p --plot_mode=xz
 ```
-[效果展示]()
+![效果展示](https://github.com/chunyuan666/A-tiny-Stereo-SLAM/blob/master/image.png?raw=true)
 ## 简单介绍
 该系统有三大线程：
 * 前端Frontend Thread

@@ -41,18 +41,18 @@ Camera.fps: -1
 
 
 
-ThDepth: 100
+ThDepth: 50
 #--------------------------------------------------------------------------------------------
 # Feature Parameters
 #--------------------------------------------------------------------------------------------
 
 # valid feature numbers to decide the tracking / init status
 numFeatures.initGood: 100
-numFeatures.trackingGood: 50
+numFeatures.trackingGood: 70
 numFeatures.trackingBad: 10
 
 # ORB Extractor: Number of features when initalizing
-ORBextractor.nInitFeatures: 1000
+ORBextractor.nInitFeatures: 500
 
 # ORB Extractor: Number of new features to detect when needs to create a new KF
 ORBextractor.nNewFeatures: 100

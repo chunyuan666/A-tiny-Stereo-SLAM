@@ -99,21 +99,6 @@ add_library(${PROJECT_NAME} SHARED
         ${SOURCES}
 )
 
-# add_library(${PROJECT_NAME} SHARED
-#         src/System.cpp
-#         src/Camera.cpp
-#         src/Frame.cpp
-#         src/Frontend.cpp
-#         src/ORBExtractor.cpp
-#         src/MapPoints.cpp
-#         src/Map.cpp
-#         src/KeyFrame.cpp
-#         src/Optimizer.cpp
-#         src/Backend.cpp
-#         src/Viewer.cpp
-#         src/LoopClosing.cpp
-#         src/DeepLCD.cpp)
-
 enable_testing()
 
 add_executable(stereo_kitti app/stereo_kitti.cpp)
